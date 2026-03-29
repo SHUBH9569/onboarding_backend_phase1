@@ -9,17 +9,36 @@ import { sequelize } from './models/index.js';
 import { typeDefs } from './graphql/typeDefs.js';
 import { resolvers } from './graphql/resolvers.js';
 
+
+const allowedOrigins = [
+  'http://localhost:3000', // Always allow local dev
+  process.env.FRONTEND_URL  // Pull this from Render/Vercel settings
+];
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: function (origin, callback) {
+    
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
+}));
 
 const server = new ApolloServer({
   typeDefs,
-  resolvers
+  resolvers,
+  introspection: true, 
+  playground: true
 });
 
 async function startServer() {
   await server.start();
-  server.applyMiddleware({ app });
+  server.applyMiddleware({ app,cors: false });
 
 
   await sequelize.authenticate();
@@ -31,7 +50,7 @@ async function startServer() {
   console.log(" MongoDB connected");
 
   app.listen(process.env.PORT, () => {
-    console.log(`Server ready at http://localhost:4000/graphql`);
+    console.log(`Server ready`);
   });
 }
 
