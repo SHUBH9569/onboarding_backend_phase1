@@ -35,7 +35,14 @@ export const resolvers = {
       return true;
     },
 
-    createBook: (_, args) => Book.create(args),
+   createBook: async (_, args) => {
+  return Book.create({
+    ...args,
+    published_date: args.published_date
+      ? new Date(args.published_date)
+      : null,
+  });
+},
 
     updateBook: async (_, { id, ...rest }) => {
       const book = await Book.findByPk(id);

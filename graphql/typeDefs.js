@@ -39,8 +39,18 @@ export const typeDefs = gql`
     updateAuthor(id: ID!, name: String): Author
     deleteAuthor(id: ID!): Boolean
 
-    createBook(title: String!, description: String, author_id: ID!): Book
-    updateBook(id: ID!, title: String): Book
+    createBook(
+  title: String!
+  description: String
+  published_date: String
+  author_id: ID!
+): Book
+    updateBook(
+  id: ID!
+  title: String
+  description: String
+  published_date: String
+): Book
     deleteBook(id: ID!): Boolean
 
 
